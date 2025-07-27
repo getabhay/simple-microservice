@@ -1,11 +1,11 @@
-FROM openjdk:17-jdk-slim as build
+FROM maven:3.9.6-openjdk-17-slim as build
 
 WORKDIR /app
 
 COPY pom.xml .
 COPY src ./src
 
-RUN mvn clean package -DskipTests
+RUN mvn -B -V clean package -DskipTests
 
 FROM eclipse-temurin:17-jre-alpine
 
