@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spring-boot-service-deployment
+  namespace: service-prod
+  labels:
+    app: spring-boot-service
+    type: backend
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: spring-boot-service
+      type: backend
+  template:
+    metadata:
+      name: spring-boot-service-pod
+      labels:
+        app: spring-boot-service
+        type: backend
+    spec:
+      containers:
+        - name: spring-boot-service-container
+          image: getabhay/simple-microservice:latest
+          env:
+            - name: DB_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: db-config
+                  key: DB_URL
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: DB_USERNAME
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: MYSQL_ROOT_PASSWORD
+          ports:
+            - containerPort: 8080
