@@ -1,0 +1,9 @@
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: spring-backend-config
+  namespace: nagp-assignment-pg
+spec:
+  healthCheck:
+    requestPath: /api/departments
+    port: 8080

@@ -4,4 +4,4 @@ metadata:
   name: db-config
   namespace: nagp-assignment-pg
 data:
-  DB_URL: "jdbc:mysql://mysql-db:3306/sampleDB"
+  DB_URL: "jdbc:mysql://mysql-db-service:3306/sampleDB"

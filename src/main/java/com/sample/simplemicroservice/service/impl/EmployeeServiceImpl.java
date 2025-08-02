@@ -84,8 +84,11 @@ public class EmployeeServiceImpl implements IEmployeeService {
     public EmployeeDTO createEmployeeDTO(Employee employee) {
         EmployeeDTO employeeDTO = new EmployeeDTO();
         employeeDTO.setId(employee.getEmployeeId());
-        employeeDTO.setDepartmentName(employee.getDepartment().getDepartmentName());
-        employeeDTO.setEmployeeType(employee.getEmployeeType());
+        if (employee.getDepartment() != null) {
+            employeeDTO.setDepartmentName(employee.getDepartment().getDepartmentName());
+        } else {
+            employeeDTO.setDepartmentName(null);
+        }        employeeDTO.setEmployeeType(employee.getEmployeeType());
         employeeDTO.setFirstName(employee.getFirstName());
         employeeDTO.setLastName(employee.getLastName());
         employeeDTO.setEmail(employee.getEmail());

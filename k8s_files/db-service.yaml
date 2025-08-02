@@ -3,11 +3,15 @@ kind: Service
 metadata:
   name: mysql-db-service
   namespace: nagp-assignment-pg
+  labels:
+    app: mysql-db
+    type: db
 spec:
+  clusterIP: None  # Headless service for StatefulSet
   selector:
     app: mysql-db
     type: db
   ports:
-    - protocol: TCP
-      port: 3306
+    - port: 3306
       targetPort: 3306
+      name: mysql

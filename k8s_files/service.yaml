@@ -3,12 +3,12 @@ kind: Service
 metadata:
   name: spring-boot-service
   namespace: nagp-assignment-pg
+  annotations:
+    cloud.google.com/backend-config: '{"default": "spring-backend-config"}'
 spec:
   selector:
     app: spring-boot-service
-    type: backend
   ports:
     - protocol: TCP
       port: 80
       targetPort: 8080
-  type: ClusterIP

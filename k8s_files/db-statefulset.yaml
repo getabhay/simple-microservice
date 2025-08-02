@@ -7,12 +7,12 @@ metadata:
     app: mysql-db
     type: db
 spec:
+  serviceName: "mysql-db-service"
   replicas: 1
   selector:
     matchLabels:
       app: mysql-db
       type: db
-  serviceName: "mysql-db-service"
   template:
     metadata:
       labels:
@@ -22,14 +22,14 @@ spec:
       containers:
         - name: mysql
           image: mysql:8
+          ports:
+            - containerPort: 3306
           env:
             - name: MYSQL_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: db-secret
                   key: MYSQL_ROOT_PASSWORD
-          ports:
-            - containerPort: 3306
           volumeMounts:
             - name: mysql-storage
               mountPath: /var/lib/mysql
@@ -43,11 +43,14 @@ spec:
               cpu: "500m"
               memory: "1Gi"
       volumes:
-        - name: mysql-storage
-          persistentVolumeClaim:
-            claimName: mysql-pvc
         - name: initdb
           configMap:
             name: db-init-config
-  updateStrategy:
-    type: RollingUpdate
+  volumeClaimTemplates:
+    - metadata:
+        name: mysql-storage
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
