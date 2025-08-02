@@ -1,105 +1,169 @@
+# Microservice Deployment on Kubernetes 
+This document provides a guide for deploying a Spring Boot microservice application on a Kubernetes cluster. The provided YAML files configure a complete stack, including a MySQL database with persistent storage, the Spring Boot application, and ingress to expose the service.
+
+### Project Description
+This is a Spring Boot application designed as a simple microservice. The application is a backend service that likely handles basic CRUD operations for employees and departments, as suggested by the database schema in the db-init-configmap.yaml.
+
+### Project and Tech Stack Details
+Here are the key details from the pom.xml file, outlining the project's setup and dependencies:
+
+**Project Name:** *Simple Microservice*
+
+**Description:** *Simple Microservice project for Spring Boot*
+
+**Java Version:** *17*
+
+**Spring Boot Version:** *3.5.3*
+
+**Key Dependencies:**
+
+* **spring-boot-starter-data-jpa:** *For database persistence with JPA.*
+* **spring-boot-starter-validation:** *For Jakarta validation.*
+* **spring-boot-starter-web:** *For building web, including RESTful, applications.*
+* **mysql-connector-j:** *MySQL JDBC driver for database connectivity.*
+* **lombok:** *A library to reduce boilerplate code.*
+* **springdoc-openapi-starter-webmvc-ui:** *To generate and serve Swagger UI for API documentation.*
+### Code Repository
+The source code for this microservice can be found on GitHub:
+[https://github.com/getabhay/simple-microservice](https://github.com/getabhay/simple-microservice)
+
+### Docker Hub
+The Docker image for the application is available on Docker Hub:
+[https://hub.docker.com/r/getabhay/simple-microservice](https://hub.docker.com/r/getabhay/simple-microservice)
+
+### Service API Tier
+The API documentation for the Spring Boot service is accessible via Swagger UI. Once the application is deployed and exposed through the ingress, you can access the API documentation at a URL similar to this (the exact URL will depend on your ingress configuration and domain):
+[http://<your-ingress-ip-address>/swagger-ui/index.html](http://<your-ingress-ip-address>/swagger-ui/index.html)
+
+## Commands to Create Resources
 Here is the recommended order of operations, along with the commands to verify the status of each resource after it's created.
 
-Step 1: Create the Namespace
+### Step 1: Create the Namespace
 It is best practice to create a dedicated namespace first to logically group all your application's resources.
 
 Command:
 
-Bash
+`kubectl apply -f namespace.yaml`
 
-kubectl apply -f namespace.yaml
-Verification:
+### Verification:
 After running the command, use kubectl get to confirm the namespace exists:
 
-Bash
+`kubectl get namespaces`
 
-kubectl get namespaces
 You should see nagp-assignment-pg in the list of namespaces.
 
-Step 2: Create Persistent Storage for the Database
+### Step 2: Create Persistent Storage for the Database
 The persistent volume and persistent volume claim must be created before the database deployment. The PVC will wait for a matching PV to bind to before it can be used.
 
 Commands:
 
-Bash
+`kubectl apply -f db-pv.yaml`
 
-kubectl apply -f db-pv.yaml
-kubectl apply -f db-pvc.yaml
-Verification:
+`kubectl apply -f db-pvc.yaml`
+
+### Verification:
 Check the status of the PersistentVolumeClaim (PVC). Its status should eventually change to Bound.
 
-Bash
+`kubectl get pvc -n nagp-assignment-pg`
 
-kubectl get pvc -n nagp-assignment-pg
 If the status is Pending, you can use the describe command to see why it hasn't bound yet:
 
-Bash
+`kubectl describe pvc mysql-pvc -n nagp-assignment-pg`
 
-kubectl describe pvc mysql-pvc -n nagp-assignment-pg
-Step 3: Create Configuration and Secret Resources
+### Step 3: Create Configuration and Secret Resources
 These resources contain the non-sensitive configuration and sensitive credentials that your database and application will use. The db-statefulset and deployment files refer to these, so they must be created first.
 
 Commands:
 
-Bash
+`kubectl apply -f db-secret.yaml`
 
-kubectl apply -f db-secret.yaml
-kubectl apply -f db-configmap.yaml
-kubectl apply -f db-init-configmap.yaml
-Verification:
+`kubectl apply -f db-configmap.yaml`
+
+`kubectl apply -f db-init-configmap.yaml`
+
+### Verification:
 Confirm that the ConfigMap and Secret resources were created:
 
-Bash
+`kubectl get configmaps -n nagp-assignment-pg`
 
-kubectl get configmaps -n nagp-assignment-pg
-kubectl get secrets -n nagp-assignment-pg
+`kubectl get secrets -n nagp-assignment-pg`
+
 You should see db-config, db-secret, and db-init-config listed.
 
-Important Note: This step assumes you have already updated your db-init-configmap.yaml file to use VARCHAR(36) instead of UUID to avoid the MySQL syntax error.
+**Important Note:** *This step assumes you have already updated your db-init-configmap.yaml file to use BINARY(16) instead of UUID to avoid the MySQL syntax error.*
 
-Step 4: Deploy the Database
+### Step 4: Deploy the Database
 Next, deploy the MySQL database. The db-statefulset and db-service should be applied together.
 
 Commands:
 
-Bash
+`kubectl apply -f db-service.yaml`
 
-kubectl apply -f db-service.yaml
-kubectl apply -f db-statefulset.yaml
-Verification:
+`kubectl apply -f db-statefulset.yaml`
+
+### Verification:
 Monitor the status of the database pods. It may take some time for the pods to become ready as they need to download the image, create the persistent volume, and run the initialization script.
 
-Bash
+`kubectl get pods -n nagp-assignment-pg`
 
-kubectl get pods -n nagp-assignment-pg
 The pod should eventually show 1/1 in the READY column. If the pod is not running or shows errors, check the logs and events:
 
-Bash
+`kubectl describe pod <pod-name> -n nagp-assignment-pg`
 
-kubectl describe pod <pod-name> -n nagp-assignment-pg
-kubectl logs <pod-name> -n nagp-assignment-pg
-Step 5: Deploy the Spring Boot Application and Ingress
+`kubectl logs <pod-name> -n nagp-assignment-pg`
+
+### Step 5: Deploy the Spring Boot Application and Ingress
 Finally, deploy your application and the ingress to expose it to external traffic. The application deployment and service depend on the database being available, and the ingress depends on the application's service.
 
 Commands:
 
-Bash
+`kubectl apply -f backend-config.yaml`
 
-kubectl apply -f deployment.yaml
-kubectl apply -f service.yaml
-kubectl apply -f ingress.yaml
-Verification:
+`kubectl apply -f deployment.yaml`
+
+`kubectl apply -f service.yaml`
+
+`kubectl apply -f ingress.yaml`
+
+### Verification:
 Check the status of your application's deployment, pods, and ingress.
 
-Bash
+`kubectl get deployments -n nagp-assignment-pg`
 
-kubectl get deployments -n nagp-assignment-pg
-kubectl get pods -n nagp-assignment-pg
-kubectl get ingress -n nagp-assignment-pg
+`kubectl get pods -n nagp-assignment-pg`
+
+`kubectl get ingress -n nagp-assignment-pg`
+
 All application pods should be running, and the ingress should display an assigned IP address under the ADDRESS column.
 
-If the application pods are failing, check their logs to diagnose issues with connecting to the database:
+### If the application pods are failing, check their logs to diagnose issues with connecting to the database:
 
-Bash
+`kubectl logs -n nagp-assignment-pg -l app=spring-boot-service
+`
 
-kubectl logs -n nagp-assignment-pg -l app=spring-boot-service
+## Sample API Requests
+Here are sample curl commands to demonstrate how to interact with the API after the application has been deployed and is accessible.
+
+### Create Employee:
+
+`curl -X 'POST' \
+    'http://<your-ingress-ip-address>/api/employees?departmentName=Sales' \
+    -H 'accept: */*' \
+    -H 'Content-Type: application/json' \
+    -d '{
+    "firstName": "Naveen",
+    "lastName": "Negi",
+    "email": "naveen@gmail.com",
+    "mobileNumber": "9900990009",
+    "employeeType": "FULL_TIME"
+}'`
+
+### Create Department:
+
+`curl -X 'POST' \
+    'http://<your-ingress-ip-address>/api/departments' \
+    -H 'accept: */*' \
+    -H 'Content-Type: application/json' \
+    -d '{
+    "departmentName": "Sales"
+}'`
