@@ -48,16 +48,3 @@ spec:
             limits:
               cpu: "500m"
               memory: "1Gi"
-          startupProbe:
-            tcpSocket:
-              port: 8080
-            initialDelaySeconds: 45
-            periodSeconds: 5
-            failureThreshold: 10
-          readinessProbe:
-            tcpSocket:
-              port: 8080
-            initialDelaySeconds: 60
-            periodSeconds: 5
-            failureThreshold: 3
-            timeoutSeconds: 5
