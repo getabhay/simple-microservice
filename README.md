@@ -167,3 +167,27 @@ Here are sample curl commands to demonstrate how to interact with the API after 
     -d '{
     "departmentName": "Sales"
 }'`
+
+### To view all Departments:
+
+`curl -X 'GET' \
+'http://<your-ingress-ip-address>/api/departments' \
+-H 'accept: */*'`
+
+### To view all Emplpoyees:
+
+`curl -X 'GET' \
+'http://<your-ingress-ip-address>/api/employees' \
+-H 'accept: */*'`
+
+### To view particular Department by id:
+
+`curl -X 'GET' \
+'http://<your-ingress-ip-address>/api/departments/<department_id>' \
+-H 'accept: */*'`
+
+### To view particular Employee by id:
+
+`curl -X 'GET' \
+'http://<your-ingress-ip-address>/api/employees/<employee_id>' \
+-H 'accept: */*'`
