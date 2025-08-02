@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: mysql-db
+  name: mysql-db-service
   namespace: nagp-assignment-pg
 spec:
   selector:
