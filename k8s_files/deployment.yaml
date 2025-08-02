@@ -22,6 +22,7 @@ spec:
       containers:
         - name: spring-boot-service-container
           image: getabhay/simple-microservice:latest
+          imagePullPolicy: Always
           env:
             - name: DB_URL
               valueFrom:
