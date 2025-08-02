@@ -19,7 +19,7 @@ import java.util.UUID;
 public class Department {
 
     @Id
-    @Column(name = "department_id", columnDefinition = "uuid", updatable = false, nullable = false)
+    @Column(name = "department_id", columnDefinition = "varchar(36)", updatable = false, nullable = false)
     private UUID departmentId;
 
     @NotBlank(message = "Department name cannot be blank")

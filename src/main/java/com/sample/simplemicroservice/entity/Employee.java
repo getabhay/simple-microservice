@@ -25,7 +25,7 @@ import java.util.UUID;
 public class Employee {
 
     @Id
-    @Column(name = "employee_id", columnDefinition = "uuid", updatable = false, nullable = false)
+    @Column(name = "employee_id", columnDefinition = "varchar(36)", updatable = false, nullable = false)
     private UUID employeeId;
 
     @NotBlank(message = "First name cannot be blank")
