@@ -2,7 +2,7 @@
 This document provides a guide for deploying a Spring Boot microservice application on a Kubernetes cluster. The provided YAML files configure a complete stack, including a MySQL database with persistent storage, the Spring Boot application, and ingress to expose the service.
 
 ### Project Description
-This is a Spring Boot application designed as a simple microservice. The application is a backend service that likely handles basic CRUD operations for employees and departments, as suggested by the database schema in the db-init-configmap.yaml.
+This is a Spring Boot application designed as a simple microservice. The application is a backend service that likely handles basic CRUD operations for employees and departments, as suggested by the database schema in the db-init-configmap.yaml. Added CI/CD pipeline
 
 ### Project and Tech Stack Details
 Here are the key details from the pom.xml file, outlining the project's setup and dependencies:
