@@ -25,6 +25,12 @@ jobs:
 
       - name: Zip
         run: zip deploy.zip Dockerrun.aws.json
+      
+      - name: List zip content (DEBUG)
+        run: unzip -l deploy.zip
+      
+      - name: Debug ECR URI
+        run: echo "ECR=${{ secrets.ECR_REPOSITORY_URI }}"
 
       - name: Deploy
         uses: einaregilsson/beanstalk-deploy@v22
