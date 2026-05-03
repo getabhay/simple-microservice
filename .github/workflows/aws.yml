@@ -1,0 +1,46 @@
+name: CD - Deploy to Elastic Beanstalk
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: demo-env
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create Dockerrun.aws.json
+        run: |
+          cat <<EOF > Dockerrun.aws.json
+          {
+            "AWSEBDockerrunVersion": 1,
+            "Image": {
+              "Name": "${{ secrets.ECR_REPOSITORY_URI }}:latest",
+              "Update": "true"
+            },
+            "Ports": [
+              {
+                "ContainerPort": 8080
+              }
+            ]
+          }
+          EOF
+
+      - name: Zip
+        run: zip -r deploy.zip Dockerrun.aws.json
+
+      - name: Deploy
+        uses: einaregilsson/beanstalk-deploy@v22
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          application_name: ${{ secrets.EB_APPLICATION_NAME }}
+          environment_name: ${{ secrets.EB_ENVIRONMENT_NAME }}
+          version_label: v-${{ github.run_number }}
+          region: ${{ secrets.AWS_REGION }}
+          deployment_package: deploy.zip
