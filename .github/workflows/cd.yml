@@ -14,26 +14,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Create Dockerrun.aws.json
+      - name: Prepare Dockerrun
         run: |
-          echo '{
-            "AWSEBDockerrunVersion": 1,
-            "Image": {
-              "Name": "'${{ secrets.ECR_REPOSITORY_URI }}':latest",
-              "Update": "true"
-            },
-            "Ports": [
-              {
-                "ContainerPort": 8080
-              }
-            ]
-          }' > Dockerrun.aws.json
+          cp Dockerrun.aws.json Dockerrun-final.json
+          sed -i "s|REPLACE_IMAGE|${{ secrets.ECR_REPOSITORY_URI }}:latest|" Dockerrun-final.json
+          mv Dockerrun-final.json Dockerrun.aws.json
 
-      - name: Debug Dockerrun file
-        run: cat Dockerrun.aws.json
-        
+      - name: Validate JSON
+        run: python -m json.tool Dockerrun.aws.json
+
       - name: Zip
-        run: zip -r deploy.zip Dockerrun.aws.json
+        run: zip deploy.zip Dockerrun.aws.json
 
       - name: Deploy
         uses: einaregilsson/beanstalk-deploy@v22
