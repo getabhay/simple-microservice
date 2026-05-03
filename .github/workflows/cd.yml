@@ -20,17 +20,8 @@ jobs:
           sed -i "s|REPLACE_IMAGE|${{ secrets.ECR_REPOSITORY_URI }}:latest|" Dockerrun-final.json
           mv Dockerrun-final.json Dockerrun.aws.json
 
-      - name: Validate JSON
-        run: python -m json.tool Dockerrun.aws.json
-
       - name: Zip
         run: zip deploy.zip Dockerrun.aws.json
-      
-      - name: List zip content (DEBUG)
-        run: unzip -l deploy.zip
-      
-      - name: Debug ECR URI
-        run: echo "ECR=${{ secrets.ECR_REPOSITORY_URI }}"
 
       - name: Deploy
         uses: einaregilsson/beanstalk-deploy@v22
