@@ -8,7 +8,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: demo-env
+    environment: demo-cd-env
 
     steps:
       - name: Checkout
