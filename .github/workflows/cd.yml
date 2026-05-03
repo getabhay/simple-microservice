@@ -16,11 +16,10 @@ jobs:
 
       - name: Create Dockerrun.aws.json
         run: |
-          cat <<EOF > Dockerrun.aws.json
-          {
+          echo '{
             "AWSEBDockerrunVersion": 1,
             "Image": {
-              "Name": "${{ secrets.ECR_REPOSITORY_URI }}:latest",
+              "Name": "'${{ secrets.ECR_REPOSITORY_URI }}':latest",
               "Update": "true"
             },
             "Ports": [
@@ -28,9 +27,11 @@ jobs:
                 "ContainerPort": 8080
               }
             ]
-          }
-          EOF
+          }' > Dockerrun.aws.json
 
+      - name: Debug Dockerrun file
+        run: cat Dockerrun.aws.json
+        
       - name: Zip
         run: zip -r deploy.zip Dockerrun.aws.json
 
