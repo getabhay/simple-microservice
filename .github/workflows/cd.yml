@@ -25,6 +25,9 @@ jobs:
 
       - name: Zip
         run: zip deploy.zip Dockerrun.aws.json
+      
+      - name: List zip content (DEBUG)
+        run: unzip -l deploy.zip
 
       - name: Deploy
         uses: einaregilsson/beanstalk-deploy@v22
