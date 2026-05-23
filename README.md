@@ -141,7 +141,7 @@ All application pods should be running, and the ingress should display an assign
 `kubectl logs -n nagp-assignment-pg -l app=spring-boot-service
 `
 
-## Sample API Requests
+## Sample API Requests Curls
 Here are sample curl commands to demonstrate how to interact with the API after the application has been deployed and is accessible.
 
 ### Create Employee:
